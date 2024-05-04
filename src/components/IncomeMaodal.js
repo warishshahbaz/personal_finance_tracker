@@ -1,0 +1,103 @@
+import { Button, Input, Modal, Select, Typography } from "antd";
+import React, { useState } from "react";
+
+function IncomeModal({ setState, open, setIncomeData }) {
+  const [inputChange, setInputChange] = useState({
+    name: "",
+    value: "",
+    date: "",
+    tag: "",
+    type: "income",
+  });
+
+  const handleOk = () => {
+    setIncomeData((pre) => [...pre, inputChange]);
+    setInputChange({
+      name: "",
+      value: "",
+      date: "",
+      tag: "",
+      type: "income",
+    });
+    setState(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInputChange({ ...inputChange, [name]: value });
+  };
+  const selectChange = (val) => {
+    setInputChange({ ...inputChange, tag: val ?? "" });
+  };
+
+  return (
+    <Modal
+      title="Add Income"
+      open={open}
+      footer={[]}
+      // onOk={handleOk}
+      onCancel={() => setState(false)}
+    >
+      <div>
+        <p>Name</p>
+        <Input
+          name="name"
+          placeholder="Name"
+          value={inputChange.name}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <p>Amount</p>
+        <Input
+          placeholder="Amount"
+          type="number"
+          name="value"
+          value={inputChange.value}
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <p>Date</p>
+        <Input
+          type="date"
+          placeholder="Date"
+          value={inputChange.date}
+          name="date"
+          onChange={handleChange}
+        />
+      </div>
+      <div>
+        <p>Tag</p>
+        <Select
+          defaultValue="Select Tag"
+          style={{
+            width: "100%",
+          }}
+          name="select"
+          onChange={selectChange}
+        >
+          <Select.Option value="salary">Salary</Select.Option>
+          <Select.Option value="shopping">Shopping</Select.Option>
+          <Select.Option value="study">Study</Select.Option>
+          <Select.Option value="other">Other</Select.Option>
+        </Select>
+
+        <Button
+          disabled={
+            inputChange.name === "" ||
+            inputChange.amount === "" ||
+            inputChange.tag === "" ||
+            inputChange.date === ""
+          }
+          className="mt-5 w-full border-blue-300  "
+          onClick={handleOk}
+        >
+          ADD INCOME
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+export default IncomeModal;
