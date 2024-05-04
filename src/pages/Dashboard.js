@@ -6,6 +6,7 @@ import { DoughtnutChart } from "../components/Doughnut";
 import IncomeModal from "../components/IncomeMaodal";
 import ExpenseModal from "../components/ExpenseModal";
 import { SearchOutlined } from "@ant-design/icons";
+import Empty from "../components/Empty";
 
 const columns = [
   {
@@ -69,6 +70,13 @@ function Dashboard() {
     setIsExpenseModalVisible(true);
   };
 
+  // reset Handler
+  const resetHandler = () => {
+    setAllData([]);
+    setIncomeData([]);
+    setExpenseData([]);
+  };
+
   // filter the table details
   const filterChange = (e) => {
     let value = e.target.value;
@@ -96,16 +104,15 @@ function Dashboard() {
   // sort bt max income
   const sortByMaxIncome = () => {
     let res = updatedData.sort((a, b) => b.income - a.income);
-    // console.log(res, "---------------------");
-    setUpdatedData(res);
+
+    setUpdatedData(res ?? []);
   };
+
   // sort by max expense
   const sortByMaxExpense = () => {
     let res = updatedData.sort((a, b) => b.expense - a.expense);
     setUpdatedData(res);
   };
-
-  console.log(updatedData, "updatedData");
 
   useEffect(() => {
     if (incomeData.length > 0 || expenseData.length > 0) {
@@ -132,11 +139,12 @@ function Dashboard() {
   return (
     <>
       <div className="w-full flex justify-center flex-col items-center ">
-        <div className="flex justify-between items-center w-[97%] my-6 ">
+        <div className="flex justify-between items-center w-[97%] mt-5 ">
           <CardContainer
             title="Current Balance"
             btn="Reset Balance"
             value={current_value ?? 0}
+            func={resetHandler}
           />
           <CardContainer
             title="Total Balance"
@@ -152,47 +160,51 @@ function Dashboard() {
             func={addExpenseHandler}
           />
         </div>
-        <div className="w-[96%] h-[55vh] flex justify-center  gap-4 ">
-          <Card className="w-[75%]  shadow-xl h-full ">
-            <p className="font-[500] text-xl ">Financial Statistics</p>
-            <div className="h-[290px] flex justify-center ">
-              <LineChart
-                incomeData={incomeData ?? []}
-                expenseData={expenseData ?? []}
-              />
+        {AllData.length > 0 ? (
+          <>
+            <div className="w-[96%] h-[55vh] flex justify-center  gap-4 ">
+              <Card className="w-[75%]  shadow-xl h-full ">
+                <p className="font-[500] text-xl ">Financial Statistics</p>
+                <div className="h-[290px] flex justify-center ">
+                  <LineChart
+                    incomeData={incomeData ?? []}
+                    expenseData={expenseData ?? []}
+                  />
+                </div>
+              </Card>
+              <Card className="w-[25%] shadow-xl ">
+                <p className="font-[500] text-xl ">All Expenses</p>
+                <DoughtnutChart
+                  Total_value={Total_value}
+                  current_value={current_value}
+                  Expense_value={Expense_value}
+                />
+              </Card>
             </div>
-          </Card>
-          <Card className="w-[25%] shadow-xl ">
-            <p className="font-[500] text-xl ">All Expenses</p>
-            <DoughtnutChart
-              Total_value={Total_value}
-              current_value={current_value}
-              Expense_value={Expense_value}
-            />
-          </Card>
-        </div>
-
-        <div className="w-[96%]  flex  items-center  gap-x-4 mt-5  shadow-xl ">
-          <Input
-            placeholder="Search here..."
-            onChange={filterChange}
-            prefix={
-              <SearchOutlined
-                style={{
-                  color: "rgba(0,0,0,.25)",
-                }}
+            <div className="w-[96%]  flex  items-center  gap-x-4 mt-5  shadow-xl ">
+              <Input
+                placeholder="Search here..."
+                onChange={filterChange}
+                prefix={
+                  <SearchOutlined
+                    style={{
+                      color: "rgba(0,0,0,.25)",
+                    }}
+                  />
+                }
               />
-            }
-          />
-          <div className=" gap-x-4 flex ">
-            <Button onClick={sortByMaxIncome}>Sort By max income </Button>
-            <Button onClick={sortByMaxExpense}>Sort By max expense </Button>
-          </div>
-        </div>
-
-        <Card className="w-[96%] mt-3 ">
-          <Table columns={columns} dataSource={updatedData ?? []} />
-        </Card>
+              <div className=" gap-x-4 flex ">
+                <Button onClick={sortByMaxIncome}>Sort By max income </Button>
+                <Button onClick={sortByMaxExpense}>Sort By max expense </Button>
+              </div>
+            </div>
+            <Card className="w-[96%] mt-3 ">
+              <Table columns={columns} dataSource={updatedData ?? []} />
+            </Card>{" "}
+          </>
+        ) : (
+          <Empty />
+        )}
       </div>
 
       {isIncomeModalVisible && (
